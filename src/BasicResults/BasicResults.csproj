@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>BasicResults</RootNamespace>
+    <!--
+      A public library, so every public member carries documentation and the build fails
+      on a missing one: TreatWarningsAsErrors turns CS1591 into an error.
+    -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>BasicResults</PackageId>
+    <Description>Result, Error and Maybe: three small value types for modelling failure and absence in the type system rather than with exceptions and nulls.</Description>
+    <Authors>nsmela</Authors>
+    <RepositoryUrl>https://github.com/nsmela/BasicResults</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+
+</Project>
