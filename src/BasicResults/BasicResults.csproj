@@ -35,8 +35,21 @@
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>result;maybe;option;error;railway;functional</PackageTags>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <!--
+    The version is not set here: the release workflow passes it from the git tag, so the tag and
+    the published package cannot disagree. A local pack without one comes out as 1.0.0.
+
+    Deterministic, path-independent builds in CI, so the published assembly can be rebuilt
+    bit-for-bit from the commit the package records. Off locally, where it would rewrite the paths
+    a debugger uses to find sources on disk.
+  -->
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
   <ItemGroup>

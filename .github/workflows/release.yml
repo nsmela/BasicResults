@@ -1,0 +1,87 @@
+name: Release
+
+# Publishes BasicResults to nuget.org when a version tag is pushed:
+#
+#   git push origin main        # then wait for ci.yml to go green on that commit
+#   git tag v1.0.0
+#   git push origin v1.0.0
+#
+# The package version is the tag without its leading "v", so the two cannot disagree.
+#
+# This workflow only packs and publishes the netstandard2.0 library; testing is ci.yml's job.
+# ci.yml runs on branch pushes, not tag pushes, so the two never run for the same event and only
+# this one publishes. The first step refuses a tag whose commit is not on main - a commit that
+# was never pushed to a branch was never tested. It builds with the SDK preinstalled on the
+# runner rather than pinning one.
+#
+# Publishing uses nuget.org Trusted Publishing: the job exchanges a short-lived GitHub OIDC token
+# for a one-hour nuget.org API key, so no long-lived key is stored anywhere. It needs, once:
+#
+#   - a Trusted Publishing policy on nuget.org (your username > Trusted Publishing) with
+#     Repository Owner: nsmela, Repository: BasicResults, Workflow File: release.yml
+#   - a repository secret NUGET_USER holding the nuget.org profile name (not the email address)
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # lets the job request the OIDC token nuget.org exchanges for a key
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history, so the tagged commit can be checked against main
+
+      - name: Require the tagged commit to be on main
+        run: |
+          git fetch --no-tags origin main
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "Tag '$GITHUB_REF_NAME' points at $GITHUB_SHA, which is not on main." >&2
+            echo "Push the commit to main, let ci.yml pass, then tag it." >&2
+            exit 1
+          fi
+
+      - name: Resolve version
+        id: version
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "Tag '$GITHUB_REF_NAME' is not v<major>.<minor>.<patch>[-prerelease]." >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Show SDK
+        run: dotnet --version
+
+      # The library project alone: restores, builds and packs lib/netstandard2.0.
+      - name: Pack
+        run: >
+          dotnet pack src/BasicResults/BasicResults.csproj -c Release
+          -p:Version=${{ steps.version.outputs.version }} -o artifacts
+
+      # Requested immediately before the push: the key it returns lives for one hour.
+      - name: NuGet login (OIDC to temporary API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      # The .snupkg beside the .nupkg goes to the symbol server with it. --skip-duplicate makes
+      # re-running the job for a tag that already published harmless.
+      - name: Push to nuget.org
+        run: >
+          dotnet nuget push "artifacts/*.nupkg"
+          --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
+          --source https://api.nuget.org/v3/index.json
+          --skip-duplicate

@@ -13,6 +13,16 @@ Targets `netstandard2.0` with no dependencies, so it is consumable from .NET Fra
 and later, .NET Core 2.0 and later, and every .NET 5+ release. One build, and the assembly CI
 executes is the same one every consumer loads.
 
+## Install
+
+```bash
+dotnet add package BasicResults
+```
+
+```csharp
+using BasicResults;
+```
+
 ## Error
 
 A domain error as a value: compared, returned and pattern-matched like any other.
