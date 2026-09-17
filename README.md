@@ -9,7 +9,9 @@ copies of a type this foundational drift apart quietly — one gained `Map`/`Bin
 not, and a `Maybe<T>` without an `Equals` override falls back to reflective struct equality — so
 they live here instead, in one place both can reference.
 
-`net8.0`, no dependencies.
+Targets `netstandard2.0` with no dependencies, so it is consumable from .NET Framework 4.6.1
+and later, .NET Core 2.0 and later, and every .NET 5+ release. One build, and the assembly CI
+executes is the same one every consumer loads.
 
 ## Error
 

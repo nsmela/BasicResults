@@ -1,6 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <!--
+      The library targets netstandard2.0, which is not runnable, so the tests run on net8.0
+      against exactly the assembly a consumer would load. Add a net48 leg here to exercise it
+      on .NET Framework; that needs a Windows runner.
+    -->
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>BasicResults.Tests</RootNamespace>
     <IsPackable>false</IsPackable>
   </PropertyGroup>

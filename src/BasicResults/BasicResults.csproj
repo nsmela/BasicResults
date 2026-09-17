@@ -1,6 +1,24 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <!--
+      netstandard2.0, and only netstandard2.0. It is consumable from .NET Framework 4.6.1+,
+      .NET Core 2.0+ and every .NET 5+ release, which is the whole point: one build, and the
+      assembly CI executes is the same one every consumer loads.
+
+      The cost is that this code cannot use anything newer than netstandard2.0 offers, and it
+      is paid in the source rather than papered over with polyfills, so that nothing here
+      pretends to be a framework it is not: Error declares get-only properties instead of
+      positional ones, because init-only setters need a marker type that postdates
+      netstandard2.0, and Result checks for null longhand where
+      ArgumentNullException.ThrowIfNull would go. Nullable annotations are unaffected either
+      way: they are emitted onto this assembly's own members regardless of target.
+
+      Adding net8.0 would mean listing it in TargetFrameworks and revisiting both of those
+      choices - along with the attributes a polyfill genuinely cannot supply, such as
+      [StackTraceHidden], which the runtime honours only from the real framework type.
+    -->
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>BasicResults</RootNamespace>
     <!--
       A public library, so every public member carries documentation and the build fails

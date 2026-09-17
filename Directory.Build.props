@@ -1,6 +1,9 @@
 <Project>
+  <!--
+    TargetFramework is set per project, not here: the library targets netstandard2.0 and the
+    test project has to target something runnable.
+  -->
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
     <LangVersion>12</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>

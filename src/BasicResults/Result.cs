@@ -45,7 +45,13 @@ public class Result
     /// <exception cref="ArgumentException"><paramref name="error"/> is <see cref="Error.None"/>.</exception>
     public static Result Failure(Error error)
     {
-        ArgumentNullException.ThrowIfNull(error);
+        // Longhand rather than ArgumentNullException.ThrowIfNull, which is .NET 6 and later.
+        // This library targets netstandard2.0; see the note in BasicResults.csproj.
+        if (error is null)
+        {
+            throw new ArgumentNullException(nameof(error), "A failure needs an error.");
+        }
+
         if (error == Error.None)
         {
             throw new ArgumentException("A failure needs a meaningful error, not Error.None.", nameof(error));
@@ -102,7 +108,11 @@ public sealed class Result<T> : Result
     /// <exception cref="ArgumentException"><paramref name="error"/> is <see cref="Error.None"/>.</exception>
     public new static Result<T> Failure(Error error)
     {
-        ArgumentNullException.ThrowIfNull(error);
+        if (error is null)
+        {
+            throw new ArgumentNullException(nameof(error), "A failure needs an error.");
+        }
+
         if (error == Error.None)
         {
             throw new ArgumentException("A failure needs a meaningful error, not Error.None.", nameof(error));
