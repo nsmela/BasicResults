@@ -15,6 +15,7 @@
     <Authors>nsmela</Authors>
     <RepositoryUrl>https://github.com/nsmela/BasicResults</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>

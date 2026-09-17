@@ -84,3 +84,8 @@ optional value becomes a required one.
 dotnet build
 dotnet test
 ```
+
+## Licence
+
+MIT — see [LICENSE](LICENSE). Use it, change it, ship it, no attribution beyond keeping the
+copyright notice with the source.
